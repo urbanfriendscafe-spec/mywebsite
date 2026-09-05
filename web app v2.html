@@ -1,0 +1,51 @@
+Conversation with Gemini
+"Build a web-first agent portal for V2Pay Technology. Use a premium branding style inspired by Paytm and PhonePe, featuring a clean white interface with vibrant blue and purple accents. The login screen must include a language selector for English, Kannada, Hindi, and Tamil. The home screen must have large, clear navigation icons for AePS, Money Transfer, Bill Pay, and Loan Leads. Include a prominent Wallet section showing a Live Balance and a Pending Commissions balance. Use a high-trust UI with green for success and red for failed transaction status."
+
+One last tip: use high-contrast icons for each service so they're easy to see even when the agent is using their phone outdoors in bright sunlight.
+
+I'm excited to see V2Pay come to life. Once the builder finishes the first version, let me know if you want to refine the Loan Lead form or start
+
+HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2Pay Technology - Agent Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-main: #F4F6FB;
+            --surface: #FFFFFF;
+            --primary-blue: #0A58CA;
+            --deep-purple: #4A0E78;
+            --gradient-accent: linear-gradient(135deg, #0A58CA 0%, #4A0E78 100%);
+            --text-dark: #0F172A;
+            --text-muted: #64748B;
+            --status-success: #16A34A;
+            --status-success-bg: #DCFCE7;
+            --status-failed: #DC2626;
+            --status-failed-bg: #FEE2E2;
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(10, 88, 202, 0.08);
+            --shadow-lg: 0 10px 25px rgba(74, 14, 120, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0d1117;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }

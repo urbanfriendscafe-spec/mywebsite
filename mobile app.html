@@ -1,0 +1,803 @@
+
+Conversation with Gemini
+"Build a mobile-first agent portal for V2Pay Technology. Use a premium branding style inspired by Paytm and PhonePe, featuring a clean white interface with vibrant blue and purple accents. The login screen must include a language selector for English, Kannada, Hindi, and Tamil. The home screen must have large, clear navigation icons for AePS, Money Transfer, Bill Pay, and Loan Leads. Include a prominent Wallet section showing a Live Balance and a Pending Commissions balance. Use a high-trust UI with green for success and red for failed transaction status."
+
+One last tip: use high-contrast icons for each service so they're easy to see even when the agent is using their phone outdoors in bright sunlight.
+
+I'm excited to see V2Pay come to life. Once the builder finishes the first version, let me know if you want to refine the Loan Lead form or start
+
+HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2Pay Technology - Agent Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-main: #F4F6FB;
+            --surface: #FFFFFF;
+            --primary-blue: #0A58CA;
+            --deep-purple: #4A0E78;
+            --gradient-accent: linear-gradient(135deg, #0A58CA 0%, #4A0E78 100%);
+            --text-dark: #0F172A;
+            --text-muted: #64748B;
+            --status-success: #16A34A;
+            --status-success-bg: #DCFCE7;
+            --status-failed: #DC2626;
+            --status-failed-bg: #FEE2E2;
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(10, 88, 202, 0.08);
+            --shadow-lg: 0 10px 25px rgba(74, 14, 120, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0d1117;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        /* Mobile Viewport Container */
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            max-height: 896px;
+            background-color: var(--bg-main);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (min-width: 420px) {
+            .app-container {
+                border-radius: 28px;
+                height: 92vh;
+                border: 8px solid #1E293B;
+            }
+        }
+
+        /* Utility Screens */
+        .screen {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--bg-main);
+            z-index: 1;
+        }
+
+        .screen.active {
+            display: flex;
+            z-index: 2;
+        }
+
+        /* High-Contrast Interactive Components */
+        .btn-primary {
+            background: var(--gradient-accent);
+            color: #FFFFFF;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 16px;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary:active {
+            opacity: 0.9;
+        }
+
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            background: var(--surface);
+            padding: 24px;
+            justify-content: space-between;
+        }
+
+        .login-header {
+            margin-top: 20px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--deep-purple);
+        }
+
+        .brand-title span {
+            color: var(--primary-blue);
+        }
+
+        .lang-selector-container {
+            margin-bottom: 24px;
+        }
+
+        .lang-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .lang-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .lang-btn {
+            border: 2px solid var(--border-color);
+            background: var(--surface);
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .lang-btn.selected {
+            border-color: var(--primary-blue);
+            background: rgba(10, 88, 202, 0.05);
+            color: var(--primary-blue);
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary-blue);
+        }
+
+        /* --- DASHBOARD HEADER --- */
+        .header {
+            background: var(--surface);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .agent-details h4 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .agent-details p {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* --- WALLET SECTION --- */
+        .wallet-card {
+            background: var(--gradient-accent);
+            margin: 16px;
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .wallet-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .wallet-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            opacity: 0.8;
+            font-weight: 700;
+        }
+
+        .wallet-balance-primary {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .wallet-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.15);
+            margin-bottom: 16px;
+        }
+
+        .wallet-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pending-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pending-title {
+            font-size: 11px;
+            opacity: 0.8;
+            font-weight: 600;
+        }
+
+        .pending-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: #FDE047; /* High-visibility yellow accent */
+        }
+
+        .btn-add-money {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+
+        /* --- HIGH CONTRAST SERVICES GRID --- */
+        .section-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0 20px 12px 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .service-card {
+            background: var(--surface);
+            border: 2px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Outdoor Outdoor High-Contrast Solar Icons */
+        .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        /* High contrast color pairs designed for bright sunlight */
+        .bg-aeps { background: #0A58CA; color: #FFFFFF; }
+        .bg-dmt { background: #4A0E78; color: #FFFFFF; }
+        .bg-bill { background: #0284C7; color: #FFFFFF; }
+        .bg-loan { background: #D97706; color: #FFFFFF; }
+
+        .service-card h3 {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        /* --- TRANSACTIONS LIST --- */
+        .tx-list {
+            padding: 0 16px 80px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tx-card {
+            background: var(--surface);
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border-color);
+        }
+
+        .tx-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tx-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-success {
+            background-color: var(--status-success-bg);
+            color: var(--status-success);
+        }
+
+        .status-failed {
+            background-color: var(--status-failed-bg);
+            color: var(--status-failed);
+        }
+
+        .tx-details h5 {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .tx-details p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .tx-amount-group {
+            text-align: right;
+        }
+
+        .tx-amount {
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .tx-status-text {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .text-success { color: var(--status-success); }
+        .text-failed { color: var(--status-failed); }
+
+        /* Navigation Bar */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--surface);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 20;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary-blue);
+        }
+
+        /* Modal Screens */
+        .modal {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 85%;
+            background: var(--surface);
+            border-radius: 24px 24px 0 0;
+            z-index: 30;
+            transition: bottom 0.3s ease-in-out;
+            padding: 20px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal.open {
+            bottom: 0;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 25;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <div id="login-screen" class="screen active">
+        <div class="login-header">
+            <div class="brand-logo">
+                <div class="brand-icon">
+                    <i data-lucide="zap" size="28"></i>
+                </div>
+                <div class="brand-title">V2Pay <span>Tech</span></div>
+            </div>
+
+            <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 6px;">Agent Portal Sign In</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Enter your registered credentials to access services.</p>
+
+            <div class="lang-selector-container">
+                <span class="lang-label">Select Preferred Language</span>
+                <div class="lang-grid">
+                    <button class="lang-btn selected" onclick="setLanguage('en', this)">English</button>
+                    <button class="lang-btn" onclick="setLanguage('kn', this)">ಕನ್ನಡ (Kannada)</button>
+                    <button class="lang-btn" onclick="setLanguage('hi', this)">हिन्दी (Hindi)</button>
+                    <button class="lang-btn" onclick="setLanguage('ta', this)">தமிழ் (Tamil)</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label id="lbl-agent-id">Agent ID / Mobile Number</label>
+                <input type="text" class="input-field" placeholder="e.g. AG789012" value="AG992104">
+            </div>
+
+            <div class="input-group">
+                <label id="lbl-password">Password / MPIN</label>
+                <input type="password" class="input-field" placeholder="••••••••" value="123456">
+            </div>
+        </div>
+
+        <div>
+            <button class="btn-primary" onclick="showDashboard()">
+                <span id="lbl-login-btn">Secure Login</span>
+                <i data-lucide="arrow-right" size="18"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="home-screen" class="screen">
+        <div class="header">
+            <div class="agent-info">
+                <div class="avatar">R</div>
+                <div class="agent-details">
+                    <h4>Rajesh Kumar</h4>
+                    <p>ID: AG992104 • <span style="color:var(--status-success); font-weight:800;">KYC Verified</span></p>
+                </div>
+            </div>
+            <i data-lucide="bell" size="20" style="color: var(--text-dark); cursor: pointer;"></i>
+        </div>
+
+        <div class="wallet-card">
+            <div class="wallet-top">
+                <span class="wallet-title">Main Wallet Balance</span>
+                <i data-lucide="shield-check" size="18"></i>
+            </div>
+            <div class="wallet-balance-primary">₹ 42,850.50</div>
+            <div class="wallet-divider"></div>
+            <div class="wallet-bottom">
+                <div class="pending-box">
+                    <span class="pending-title">Pending Commissions</span>
+                    <span class="pending-amount">₹ 3,410.00</span>
+                </div>
+                <button class="btn-add-money">+ Top Up</button>
+            </div>
+        </div>
+
+        <div class="section-title">Core Services</div>
+        <div class="services-grid">
+            <div class="service-card" onclick="alert('AePS Module Selected')">
+                <div class="icon-wrapper bg-aeps">
+                    <i data-lucide="fingerprint" size="32"></i>
+                </div>
+                <h3>AePS</h3>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top:2px;">Cash & Balance</span>
+            </div>
+
+            <div class="service-card" onclick="alert('DMT Module Selected')">
+                <div class="icon-wrapper bg-dmt">
+                    <i data-lucide="send" size="30"></i>
+                </div>
+                <h3>Money Transfer</h3>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top:2px;">Instant DMT</span>
+            </div>
+
+            <div class="service-card" onclick="alert('BBPS Module Selected')">
+                <div class="icon-wrapper bg-bill">
+                    <i data-lucide="receipt" size="30"></i>
+                </div>
+                <h3>Bill Pay</h3>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top:2px;">BBPS Utility</span>
+            </div>
+
+            <div class="service-card" onclick="openLoanModal()">
+                <div class="icon-wrapper bg-loan">
+                    <i data-lucide="briefcase" size="30"></i>
+                </div>
+                <h3>Loan Leads</h3>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top:2px;">High Commission</span>
+            </div>
+        </div>
+
+        <div class="section-title">Recent Activity</div>
+        <div class="tx-list">
+            <div class="tx-card">
+                <div class="tx-info">
+                    <div class="tx-badge status-success">
+                        <i data-lucide="arrow-down-left" size="18"></i>
+                    </div>
+                    <div class="tx-details">
+                        <h5>AePS Cash Withdrawal</h5>
+                        <p>Aadhaar: •••• 4092</p>
+                    </div>
+                </div>
+                <div class="tx-amount-group">
+                    <div class="tx-amount">₹ 10,000</div>
+                    <div class="tx-status-text text-success">Success</div>
+                </div>
+            </div>
+
+            <div class="tx-card">
+                <div class="tx-info">
+                    <div class="tx-badge status-failed">
+                        <i data-lucide="x" size="18"></i>
+                    </div>
+                    <div class="tx-details">
+                        <h5>Money Transfer (DMT)</h5>
+                        <p>A/c: •••• 8812</p>
+                    </div>
+                </div>
+                <div class="tx-amount-group">
+                    <div class="tx-amount">₹ 2,500</div>
+                    <div class="tx-status-text text-failed">Failed</div>
+                </div>
+            </div>
+
+            <div class="tx-card">
+                <div class="tx-info">
+                    <div class="tx-badge status-success">
+                        <i data-lucide="arrow-down-left" size="18"></i>
+                    </div>
+                    <div class="tx-details">
+                        <h5>Electricity Bill</h5>
+                        <p>BESCOM • 9021</p>
+                    </div>
+                </div>
+                <div class="tx-amount-group">
+                    <div class="tx-amount">₹ 1,420</div>
+                    <div class="tx-status-text text-success">Success</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <i data-lucide="home" size="18"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="file-text" size="18"></i>
+                <span>Reports</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="help-circle" size="18"></i>
+                <span>Support</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="closeLoanModal()"></div>
+    <div id="loan-modal" class="modal">
+        <div class="modal-header">
+            <h3 style="font-weight: 800; font-size: 18px;">New Loan Lead Application</h3>
+            <i data-lucide="x" size="20" style="cursor: pointer;" onclick="closeLoanModal()"></i>
+        </div>
+        <div style="overflow-y: auto; flex: 1;">
+            <div class="input-group">
+                <label>Customer Full Name</label>
+                <input type="text" class="input-field" placeholder="As per PAN card">
+            </div>
+            <div class="input-group">
+                <label>Mobile Number</label>
+                <input type="tel" class="input-field" placeholder="10-digit mobile number">
+            </div>
+            <div class="input-group">
+                <label>Loan Product</label>
+                <select class="input-field">
+                    <option>Personal Loan</option>
+                    <option>Business Loan</option>
+                    <option>Two-Wheeler Loan</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Requested Amount (₹)</label>
+                <input type="number" class="input-field" placeholder="e.g. 50000">
+            </div>
+        </div>
+        <button class="btn-primary" onclick="submitLoanLead()" style="margin-top: 10px;">Submit Lead</button>
+    </div>
+
+</div>
+
+<script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Multi-Language Localization Engine
+    const i18n = {
+        en: {
+            agentId: "Agent ID / Mobile Number",
+            password: "Password / MPIN",
+            loginBtn: "Secure Login"
+        },
+        kn: {
+            agentId: "ಏಜೆಂಟ್ ಐಡಿ / ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
+            password: "ಪಾಸ್‌ವರ್ಡ್ / ಎಂಪಿನ‍್",
+            loginBtn: "ಸುರಕ್ಷಿತ ಲಾಗಿನ್"
+        },
+        hi: {
+            agentId: "एजेंट आईडी / मोबाइल नंबर",
+            password: "पासवर्ड / एमपिन",
+            loginBtn: "सुरक्षित लॉगिन"
+        },
+        ta: {
+            agentId: "முகவர் ஐடி / மொபைல் எண்",
+            password: "கடவுச்சொல் / எம்பின்",
+            loginBtn: "பாதுகாப்பான உள்நுழைவு"
+        }
+    };
+
+    function setLanguage(lang, btnElement) {
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
+        btnElement.classList.add('selected');
+
+        document.getElementById('lbl-agent-id').innerText = i18n[lang].agentId;
+        document.getElementById('lbl-password').innerText = i18n[lang].password;
+        document.getElementById('lbl-login-btn').innerText = i18n[lang].loginBtn;
+    }
+
+    function showDashboard() {
+        document.getElementById('login-screen').classList.remove('active');
+        document.getElementById('home-screen').classList.add('active');
+    }
+
+    function openLoanModal() {
+        document.getElementById('overlay').classList.add('active');
+        document.getElementById('loan-modal').classList.add('open');
+    }
+
+    function closeLoanModal() {
+        document.getElementById('overlay').classList.remove('active');
+        document.getElementById('loan-modal').classList.remove('open');
+    }
+
+    function submitLoanLead() {
+        alert('Loan Lead successfully logged! Track updates in the Reports tab.');
+        closeLoanModal();
+    }
+</script>
+</body>
+</html>
+I have assembled the core prototype with high-contrast UI elements optimized for daylight readability and regional language support.
+
+Let's refine the Loan Lead form next (e.g., adding dynamic field validation, credit score estimation, or document upload fields), or should we build out the AePS / Money Transfer transaction flow?
+
+
+
